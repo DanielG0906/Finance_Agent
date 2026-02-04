@@ -1,0 +1,14 @@
+export default {
+    home: require("../assets/icons/home.png"),
+    saved: require("../assets/icons/saved.png"),
+    profile: require("../assets/icons/profile.png"),
+    search: require("../assets/icons/search.png"),
+    star: require("../assets/icons/star.png"),
+    myProfileMan: require("../assets/icons/myProfileMan.png"),
+    myProfileWoman: require("../assets/icons/myProfileWoman.png"),
+    arrow: require("../assets/icons/arrow.png"),
+    manIcon: require("../assets/icons/manIcon.png"),
+    womanIcon: require("../assets/icons/womanIcon.png"),
+    eye: require("../assets/icons/eye.png"),
+    check: require("../assets/icons/check.png")
+};
