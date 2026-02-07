@@ -15,7 +15,7 @@ export default function Index() {
 
     // 2. רק כשאנחנו בטוחים ב-100% ש-isLoading הוא false
     if (user) {
-        return <Redirect href="/(tabs)/index" />;
+        return <Redirect href="/(tabs)" />;
     }
 
     return <Redirect href="/(auth)/login" />;

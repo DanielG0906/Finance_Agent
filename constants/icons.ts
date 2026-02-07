@@ -10,5 +10,6 @@ export default {
     manIcon: require("../assets/icons/manIcon.png"),
     womanIcon: require("../assets/icons/womanIcon.png"),
     eye: require("../assets/icons/eye.png"),
-    check: require("../assets/icons/check.png")
+    check: require("../assets/icons/check.png"),
+    greenComplete: require("../assets/icons/greenComplete.png"),
 };

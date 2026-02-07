@@ -1,10 +1,11 @@
 import {useContext, useEffect, useState} from "react";
 import {deleteSession, getCurrentSession, getCurrentUser} from "@/services/appWrite";
 import {createContext} from "react";
-import {AppState, AppStateStatus} from "react-native";
+import {DevSettings, Platform, AppState, AppStateStatus, I18nManager} from "react-native";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import {router} from "expo-router";
-
+import i18n from "i18next";
+import * as Updates from 'expo-updates';
 
 const GlobalContext = createContext<any>(null);
 export const useGlobalContext = () => useContext(GlobalContext);
@@ -12,17 +13,41 @@ export const useGlobalContext = () => useContext(GlobalContext);
 const GlobalProvider = ({children}: { children: React.ReactNode }) => {
     const [user, setUser] = useState<any>(null);
     const [isLoading, setIsLoading] = useState(true);
+    const [language, setLanguage] = useState(i18n.language);
+
+    const toggleLanguage = async () => {
+        const newLang = i18n.language === 'he' ? 'en' : 'he';
+        const isRTL = newLang === 'he';
+
+        // שמירת השפה בזיכרון המכשיר
+        await AsyncStorage.setItem('user-language', newLang);
+        await i18n.changeLanguage(newLang);
+        setLanguage(newLang);
+
+        if (I18nManager.isRTL == isRTL) {
+            I18nManager.allowRTL(isRTL);
+            I18nManager.forceRTL(isRTL);
+
+        }
+    };
 
     useEffect(() => {
         const initApp = async () => {
             try {
                 console.log("--- START AUTH CHECK ---");
 
+                // טעינת השפה שנשמרה
+                const savedLang = await AsyncStorage.getItem('user-language');
+                if (savedLang) {
+                    i18n.changeLanguage(savedLang);
+                    setLanguage(savedLang);
+                }
+
                 const lastExit = await AsyncStorage.getItem('lastExitTime');
                 if (lastExit) {
                     const elapsed = Date.now() - parseInt(lastExit);
                     if (elapsed > 60000) {
-                        await logout(); // זה ינקה את הסשן
+                        await logout();
                         setIsLoading(false);
                         return;
                     }
@@ -36,9 +61,7 @@ const GlobalProvider = ({children}: { children: React.ReactNode }) => {
             } catch (error: any) {
                 if (error.code === 401 || error.message.includes("missing scopes")) {
                     console.log("Cleaning up invalid/guest session...");
-                    try {
-                        await deleteSession('current');
-                    } catch (e) { /* התעלם אם נכשל */ }
+                    try { await deleteSession('current'); } catch (e) { }
                 }
                 setUser(null);
             } finally {
@@ -49,27 +72,18 @@ const GlobalProvider = ({children}: { children: React.ReactNode }) => {
         initApp();
     }, []);
 
-// 2. האזנה למעברים בין "פתוח" ל"רקע" (AppState)
     useEffect(() => {
         const handleAppStateChange = async (nextAppState: AppStateStatus) => {
-            // המשתמש סגר את האפליקציה או עבר לוואטסאפ (Background)
             if (nextAppState === 'background' || nextAppState === 'inactive') {
                 await AsyncStorage.setItem('lastExitTime', Date.now().toString());
-                console.log("App moved to background, exit time saved.");
             }
 
-            // המשתמש חזר לאפליקציה (Active)
             if (nextAppState === 'active') {
                 const lastExit = await AsyncStorage.getItem('lastExitTime');
                 if (lastExit) {
                     const elapsed = Date.now() - parseInt(lastExit);
-                    const oneMinute = 60 * 1000;
-
-                    if (elapsed > oneMinute) {
-                        console.log("Welcome back, but you were gone too long. Logging out...");
-                        await logout(); // קורא ל-deleteSession ומעדכן setUser(null)
-                    } else {
-                        console.log("Welcome back! You were gone for less than a minute.");
+                    if (elapsed > 60000) {
+                        await logout();
                     }
                 }
             }
@@ -77,11 +91,11 @@ const GlobalProvider = ({children}: { children: React.ReactNode }) => {
 
         const subscription = AppState.addEventListener('change', handleAppStateChange);
         return () => subscription.remove();
-    }, []);
+    }, [user]); // הוספת תלות ב-user
 
     useEffect(() => {
         if (!isLoading && !user) {
-            router.replace("/(auth)/login"); // מעביר אותו לדף ההתחברות
+            router.replace("/(auth)/login");
         }
     }, [user, isLoading]);
 
@@ -93,7 +107,6 @@ const GlobalProvider = ({children}: { children: React.ReactNode }) => {
                 console.error("Logout from server failed:", error.message);
             }
         } finally {
-            // בכל מקרה - מנקים את המידע המקומי כדי שהאפליקציה תחזור למסך התחברות
             await AsyncStorage.removeItem('lastExitTime');
             setUser(null);
             console.log("Local session cleared.");
@@ -101,10 +114,9 @@ const GlobalProvider = ({children}: { children: React.ReactNode }) => {
     };
 
     return (
-
-        <GlobalContext.Provider value={{ user, setUser, logout, isLoading}}>
+        <GlobalContext.Provider value={{ user, setUser, logout, isLoading, language, toggleLanguage }}>
             {children}
         </GlobalContext.Provider>
     );
 }
-export default  GlobalProvider
+export default GlobalProvider;
