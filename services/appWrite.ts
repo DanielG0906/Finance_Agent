@@ -27,8 +27,8 @@ export const createEmailPasswordSession = async (email: string, password: string
         throw e;
     }
 };
-
-export const deleteSession = async (id: string): Promise<void> => {
+// הוספת סימן שאלה אחרי id או הגדרת ערך ברירת מחדל
+export const deleteSession = async (id: string = 'current'): Promise<void> => {
     const account = new Account(client);
     try {
         await account.deleteSession(id);

@@ -1,47 +1,68 @@
 import React from 'react';
 import { TouchableOpacity, Text, View, Platform } from 'react-native';
-import { LinearGradient } from 'expo-linear-gradient';
 import { useGlobalContext } from "@/context/GlobalProvider";
-import {styles} from "@/styles";
+import { Ionicons } from '@expo/vector-icons';
 
 export default function GlobalFloatingButton() {
     const { toggleLanguage, language } = useGlobalContext();
     const isHebrew = language === 'he';
 
     return (
-        <View className="mb-8" style={{marginTop:8}}>
-        <TouchableOpacity
-            onPress={toggleLanguage}
-            activeOpacity={0.8}
-            style={{
-                position: 'absolute',
-                top: Platform.OS === 'ios' ? 10 : 20,
-                left: 20,
-                zIndex: 9999,
-                elevation: 5,
-            }}
-        >
-            <LinearGradient
-                colors={['#e4e4e4', '#3fef7c', '#2f8f05']}
-                start={{ x: 0, y: 0 }}
-                end={{ x: 1, y: 1 }}
+        <View style={{ zIndex: 9999 }}>
+            <TouchableOpacity
+                onPress={toggleLanguage}
+                activeOpacity={0.7}
                 style={{
+                    position: 'absolute',
+                    top: Platform.OS === 'ios' ? 10 : 20,
+                    left: 20,
+                    // רקע שקוף ועדין שמתמזג עם הגרדיאנט של המסך
+                    backgroundColor: 'rgba(255, 255, 255, 0.25)',
                     flexDirection: 'row',
                     alignItems: 'center',
-                    paddingHorizontal: 5,
-                    paddingVertical: 4,
-                    borderRadius: 25,
+                    paddingHorizontal: 10,
+                    paddingVertical: 6,
+                    borderRadius: 20,
                     borderWidth: 1,
-                    borderColor: 'rgba(255, 255, 255, 0.2)',
+                    borderColor: 'rgba(255, 255, 255, 0.4)',
+                    // צל מינימלי
+                    shadowColor: "#000",
+                    shadowOffset: { width: 0, height: 1 },
+                    shadowOpacity: 0.1,
+                    shadowRadius: 2,
+                    elevation: 3,
+                    marginTop:10
                 }}
             >
-                <Text style={{ fontSize: 16 }}>{isHebrew ? '🇮🇱' : '🇺🇸'}</Text>
-                <View style={{ width: 1, height: 14, backgroundColor: isHebrew ? 'rgba(0,0,0,0.1)' : 'rgba(255,255,255,0.3)', marginHorizontal: 10 }} />
-                <Text style={{ color:'#fff', fontWeight: '900', fontSize: 13 }}>
+                {/* אייקון גלובוס קטן */}
+                <Ionicons
+                    name="globe-outline"
+                    size={14}
+                    color="#1a3d2f"
+                    style={{ marginRight: 6, opacity: 0.7 }}
+                />
+
+
+
+                {/* קיצור השפה */}
+                <Text style={{
+                    color: '#1a3d2f',
+                    fontWeight: '800',
+                    fontSize: 11,
+                    letterSpacing: 0.3
+                }}>
                     {isHebrew ? 'HE' : 'EN'}
                 </Text>
-            </LinearGradient>
-        </TouchableOpacity>
+                {/* קו מפריד דק */}
+                <View style={{
+                    width: 1,
+                    height: 12,
+                    backgroundColor: 'rgba(26, 61, 47, 0.2)',
+                    marginHorizontal: 8
+                }} />
+
+                <Text style={{ fontSize: 14 }}>{isHebrew ? '🇮🇱' : '🇺🇸'}</Text>
+            </TouchableOpacity>
         </View>
     );
 }

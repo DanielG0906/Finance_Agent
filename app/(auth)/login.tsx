@@ -1,5 +1,5 @@
 import React, {useState} from 'react';
-import {TextInput, Text, View, Image, TouchableOpacity, TouchableWithoutFeedback, Keyboard, Modal,} from "react-native";
+import {Text, View, Image, TouchableOpacity} from "react-native";
 import {createEmailPasswordSession, getCurrentUser, createNewAccount, deleteSession} from "@/services/appWrite";
 import {useRouter} from "expo-router";
 import {useGlobalContext} from "@/context/GlobalProvider";
@@ -7,11 +7,10 @@ import InputComponent from "@/components/InputComponent";
 import icons from "@/constants/icons";
 import {LinearGradient} from "expo-linear-gradient";
 import images from "@/constants/images";
-import {KeyboardAwareScrollView} from "react-native-keyboard-aware-scroll-view";
 import {useTranslation} from "react-i18next";
 import i18n from "i18next";
-import GlobalFloatingButton from "@/app/GlobalFloatingButton";
-import SuccessCreateAccountComponent from "@/components/SuccessCreateAccountComponent";
+import ScreenWrapper from "@/app/ScreenWrapper";
+import StatusModalComponent from "@/components/StatusModalComponent";
 
 const Login = () => {
     const router = useRouter();
@@ -20,7 +19,7 @@ const Login = () => {
     const [userName, setUserName] = useState("");
     const [firstName, setFirstName] = useState("");
     const [lastName, setLastName] = useState("");
-    const {setUser, toggleLanguage} = useGlobalContext();
+    const {setUser} = useGlobalContext();
     const { t } = useTranslation();
     const isRTL = i18n.language === 'he';
     const [userNameFocused, setUserNameFocused] = useState(false);
@@ -31,8 +30,6 @@ const Login = () => {
     const [createAccountFlag, setCreateAccountFlag] = useState(false);
     const [gender, setGender] = useState<'male' | 'female' | null>(null);
 
-    const [showSuccess, setShowSuccess] = useState(false);
-
     const [errorUserName, setErrorUserName] = useState<string | null>(null);
     const [errorEmail, setErrorEmail] = useState<string | null>(null);
     const [errorPassword, setErrorPassword] = useState<string | null>(null);
@@ -40,16 +37,28 @@ const Login = () => {
     const [errorLastName, setErrorLastName] = useState<string | null>(null);
     const [errorGender, setErrorGender] = useState<string | null>(null);
 
-    const [showPassword, setShowPassword] = useState(false);
-
+    const [showPassword] = useState(false);
+    const [modalConfig, setModalConfig] = useState<{visible: boolean, status: 'successUserCreation' | 'errorUserExist' | 'errorService'}>({
+        visible: false,
+        status: 'successUserCreation'
+    });
 
     const signIn = async () => {
         try {
-            try { await deleteSession('current'); } catch (e) { }
-            await createEmailPasswordSession(email, userPassword);
-            const user = await getCurrentUser();
-            setUser(user);
-            router.replace("/(tabs)");
+            if(!email || !userPassword){
+                setErrorEmail(!email ? 'error_email' : null);
+                setErrorPassword(!passFocused ? 'error_password' : null);
+            }
+            else {
+                try {
+                    await deleteSession('current');
+                } catch (e) {
+                }
+                await createEmailPasswordSession(email, userPassword);
+                const user = await getCurrentUser();
+                setUser(user);
+                router.replace("/(tabs)");
+            }
         } catch (e: any) {
             console.log("Sign in error:", e.message);
         }
@@ -66,8 +75,14 @@ const Login = () => {
         } else {
             try {
                 await createNewAccount(email,userPassword,userName,gender);
-                setShowSuccess(true);
-            } catch (e) { console.log(e); }
+                setModalConfig({ visible: true, status: 'successUserCreation' });
+            } catch (e: any) {
+                if (e.code === 409) {
+                    setModalConfig({ visible: true, status: 'errorUserExist' });
+                } else {
+                    setModalConfig({ visible: true, status: 'errorService' });
+                }
+            }
         }
     }
 
@@ -87,35 +102,11 @@ const Login = () => {
 
     return (
 
-        <TouchableWithoutFeedback onPress={Keyboard.dismiss} accessible={false}>
-            <View className="flex-1">
-                {/* רקע גרדיאנט קבוע לכל המסך */}
-                <LinearGradient
-                    colors={['#f0f9f4', '#bbd8c0', '#8ac6a0']}
-                    locations={[0, 0.7, 1]} // הירוק יתחיל רק ב-70% מהגובה, ככה הוא לא יקפוץ למעלה מדי
-                    style={{
-                        position: 'absolute',
-                        left: 0,
-                        right: 0,
-                        top: 0,
-                        bottom: 0,
-                    }}
-                />
-
-                <KeyboardAwareScrollView
-                    enableOnAndroid
-                    extraScrollHeight={80}
-                    contentContainerStyle={{ flexGrow: 1 }}
-                    keyboardShouldPersistTaps="handled"
-                    keyboardOpeningTime={0}
-                    showsVerticalScrollIndicator={false}
-                >
-
+       <ScreenWrapper withSystemButton={true}>
                     <View className="flex-1">
-                        <GlobalFloatingButton/>
                         {!createAccountFlag && (
                             <View className="items-center" style={{ marginTop: 40 }}>
-                                <Text className="text-[#1a3d2f] font-black tracking-tighter" style={{ fontSize: 50 }}>
+                                <Text className="text-dark-100 font-black tracking-tighter" style={{ fontSize: 50 }}>
                                     MIND<Text className="text-green-600">WEALTH</Text>
                                 </Text>
                                 <Text className="text-gray-500 font-medium text-lg mt-1">
@@ -216,12 +207,13 @@ const Login = () => {
                                 </View>
                             </View>
                         )}
-                    </View>
-
-                </KeyboardAwareScrollView>
-                <SuccessCreateAccountComponent visible={showSuccess} onClose={async () => { setShowSuccess(false); await goBack(); }} />
+                        <StatusModalComponent
+                            visible={modalConfig.visible}
+                            status= {modalConfig.status}
+                            onClose={() => setModalConfig({ ...modalConfig, visible: false })}
+                        />
             </View>
-        </TouchableWithoutFeedback>
+</ScreenWrapper>
     );
 }
 

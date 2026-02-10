@@ -4,16 +4,17 @@ import {Image, ImageBackground, Text,View} from "react-native";
 import backgrounds from '@/constants/backgrounds';
 import icons from '@/constants/icons';
 import { BlurView } from 'expo-blur';
+import {white} from "nativewind/src/metro/picocolors";
 
 const TabIcon = ({ focused, icon, title }: any) => {
     if (focused) {
         return (
 
             <ImageBackground
-                source={backgrounds.bg7}// הרקע הצהוב/כתום שלך
-                className="flex flex-row flex-1 w-full h-full min-w-[90px] min-h-[50px] justify-center items-center overflow-hidden"
-                style={{borderRadius:30}}
-                imageStyle={{ borderRadius: 25}}
+
+                className="bg-gray-500/10 flex flex-row flex-1 w-full h-full min-w-[90px] min-h-[50px] justify-center items-center overflow-hidden"
+                style={{borderRadius:30, borderColor:'white', borderWidth:1}}
+                imageStyle={{ borderRadius: 30}}
             >
                 <BlurView
                     intensity={10}
@@ -58,13 +59,15 @@ const _Layout = () => {
                 height: 50,
                 paddingBottom: 0,
                 paddingTop:6,
-                borderRadius:50,
+                paddingLeft:1,
+                paddingRight:1,
+                borderRadius:30,
                 marginHorizontal:20,
                 marginBottom:20,
                 position: "absolute",
                 overflow: "hidden",
                 borderWidth: 0,
-                borderColor: '#111',
+                borderColor: 'transparent',
                 elevation: 0,
             },
             tabBarItemStyle: {
@@ -74,9 +77,8 @@ const _Layout = () => {
             tabBarShowLabel: false,
             tabBarBackground: () => (
                 <BlurView
-                    intensity={50} // הגברתי את הטשטוש למראה זכוכית (Glassmorphism)
-                    tint="dark"
-                    className="absolute fill-none inset-0 bg-black/60"
+                    intensity={30} // הגברתי את הטשטוש למראה זכוכית (Glassmorphism)
+                    className="absolute fill-none inset-0 "
                 />
             ),
         }}>
@@ -103,22 +105,22 @@ const _Layout = () => {
                 }}
             />
             <Tabs.Screen
-                name="saved"
-                options={{
-                    title: 'saved',
-                    headerShown: false,
-                    tabBarIcon: ({ focused }) => (
-                        <TabIcon focused={focused} icon={icons.saved} name="saved" title="Saved" />
-                    )
-                }}
-            />
-            <Tabs.Screen
                 name="search"
                 options={{
                     title: 'search',
                     headerShown: false,
                     tabBarIcon: ({ focused }) => (
-                        <TabIcon focused={focused} icon={icons.search} name="search" title="search"/>
+                        <TabIcon focused={focused} icon={icons.search} name="search" title="search" />
+                    )
+                }}
+            />
+            <Tabs.Screen
+                name="settings"
+                options={{
+                    title: 'settings',
+                    headerShown: false,
+                    tabBarIcon: ({ focused }) => (
+                        <TabIcon focused={focused} icon={icons.settings} name="settings" title="settings" />
                     )
                 }}
             />

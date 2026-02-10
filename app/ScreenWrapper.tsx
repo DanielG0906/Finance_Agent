@@ -1,32 +1,48 @@
 import React from 'react';
-import { ScrollView, StyleSheet, View, Platform } from 'react-native';
+import {
+    TouchableWithoutFeedback,
+    Keyboard,
+    View,
+    StyleSheet,
+    Platform
+} from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
+import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
 import GlobalFloatingButton from './GlobalFloatingButton';
 
-export default function ScreenWrapper({ children }: { children: React.ReactNode }) {
+interface ScreenWrapperProps {
+    children: React.ReactNode;
+    withSystemButton?: boolean; // האם להציג את כפתור השפה במסך הזה?
+}
+
+export default function ScreenWrapper({ children, withSystemButton = false}: ScreenWrapperProps) {
     return (
-        <View style={{ flex: 1 }}>
-            {/* רקע קבוע */}
-            <LinearGradient
-                colors={['#f0f9f4', '#bbd8c0', '#8ac6a0']}
-                locations={[0, 0.7, 1]}
-                style={StyleSheet.absoluteFill}
-            />
+        <TouchableWithoutFeedback onPress={Keyboard.dismiss} accessible={false}>
+            <View style={{ flex: 1 }}>
+                {/* הגרדיאנט הקבוע שלך */}
+                <LinearGradient
+                    colors={['#f0f9f4', '#94c69c', '#84bd98']}
+                    locations={[0, 0.7, 1]}
+                    style={StyleSheet.absoluteFill}
+                />
 
-            <ScrollView
-                style={{ flex: 1 }}
-                contentContainerStyle={{ flexGrow: 1 }}
-                showsVerticalScrollIndicator={false}
-                keyboardShouldPersistTaps="handled"
-            >
-                {/* הכפתור בתוך הגלילה */}
-                <GlobalFloatingButton />
+                <KeyboardAwareScrollView
+                    enableOnAndroid
+                    extraScrollHeight={Platform.OS === 'ios' ? 80 : 100}
+                    contentContainerStyle={{ flexGrow: 1 }}
+                    keyboardShouldPersistTaps="handled"
+                    keyboardOpeningTime={0}
+                    showsVerticalScrollIndicator={false}
+                >
+                    {/* כפתור צף - רק אם ביקשנו */}
+                    {withSystemButton && <GlobalFloatingButton />}
 
-                {/* התוכן של הדפים */}
-                <View style={{ flex: 1 }}>
-                    {children}
-                </View>
-            </ScrollView>
-        </View>
+                    {/* התוכן של המסך הספציפי */}
+                    <View style={{ flex: 1,marginTop:30}}>
+                        {children}
+                    </View>
+                </KeyboardAwareScrollView>
+            </View>
+        </TouchableWithoutFeedback>
     );
 }

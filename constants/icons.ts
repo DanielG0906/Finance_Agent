@@ -12,4 +12,9 @@ export default {
     eye: require("../assets/icons/eye.png"),
     check: require("../assets/icons/check.png"),
     greenComplete: require("../assets/icons/greenComplete.png"),
+    redError: require("../assets/icons/redError.png"),
+    systemError: require("../assets/icons/systemError.png"),
+    settings: require("../assets/icons/settings.png"),
+    increase: require("../assets/icons/increase.png"),
+    decrease: require("../assets/icons/decrease.png"),
 };

@@ -11,6 +11,10 @@
   "account_created": "Account Created Successfully",
   "success_description1": "Smart management, precise guidance, and total peace of mind.",
   "success_description2": "Let's start turning your financial goals into reality.",
+  "user_exist": "Account Exists",
+  "user_exit_description": "It looks like this email is already registered with us.",
+  "error_service": "System Error",
+  "error_service_description": "Please check your connection and try again in a moment.",
   "get_started": "LET'S GET STARTED",
   "error_email": "Please enter a valid email",
   "error_username": "Please enter a valid username",
@@ -24,5 +28,10 @@
   "last_name": "Last Name",
   "gender": "Gender",
   "go_back": "Go Back",
-  "enter_username": "enter your username"
+  "enter_username": "enter your username",
+
+  "index_welcomeBack": "Welcome Back!",
+  "index_profile": "Profile",
+  "index_settings": "Settings",
+  "index_logout": "Log out"
 }

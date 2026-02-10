@@ -11,6 +11,10 @@
   "account_created": "המשתמש נוצר בהצלחה",
   "success_description1": "ניהול חכם, ייעוץ מדויק ושקט נפשי אחד.",
   "success_description2": "בואו נתחיל להפוך את המטרות הכלכליות שלכם למציאות.",
+  "user_exist": "המשתמש כבר קיים",
+  "user_exit_description": "נראה שהאימייל הזה כבר רשום במערכת שלנו.",
+  "error_service": "תקלת מערכת",
+  "error_service_description": "אופס! משהו השתבש בחיבור לשרת.",
   "get_started": "בואו נתחיל",
   "error_email": "נא להזין אימייל תקין",
   "error_username": "נא לבחור שם משתמש",
@@ -24,5 +28,10 @@
   "last_name": "שם משפחה",
   "gender": "מגדר",
   "go_back": "חזרה",
-  "enter_username": "הכנס/י שם משתמש"
+  "enter_username": "הכנס/י שם משתמש",
+
+  "index_welcomeBack": "ברוך שובך!",
+  "index_profile": "פרופיל",
+  "index_settings": "הגדרות",
+  "index_logout": "התנתקות"
 }

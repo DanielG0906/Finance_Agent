@@ -3,16 +3,25 @@
     "name": "finance_agent",
     "slug": "finance_agent",
     "version": "1.0.0",
+    "extra": {
+      "supportsRTL": true
+    },
     "orientation": "portrait",
     "icon": "./assets/images/brain.png",
     "scheme": "financeagent",
     "userInterfaceStyle": "automatic",
     "newArchEnabled": true,
     "ios": {
+      "bundleIdentifier": "com.daniel.financeAgent",
       "supportsTablet": true,
-      "bundleIdentifier": "com.daniel.financeAgent"
+      "supportsRTL": true,
+      "infoPlist": {
+        "CFBundleAllowMixedLocalizations": true,
+        "CFBundleLocalizations": ["he", "en"]
+      }
     },
     "android": {
+      "supportsRTL": true,
       "adaptiveIcon": {
         "backgroundColor": "#E6F4FE",
         "foregroundImage": "",

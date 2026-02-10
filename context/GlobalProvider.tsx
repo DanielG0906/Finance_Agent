@@ -10,63 +10,80 @@ import * as Updates from 'expo-updates';
 const GlobalContext = createContext<any>(null);
 export const useGlobalContext = () => useContext(GlobalContext);
 
-const GlobalProvider = ({children}: { children: React.ReactNode }) => {
+const GlobalProvider = ({ children }: { children: React.ReactNode }) => {
     const [user, setUser] = useState<any>(null);
     const [isLoading, setIsLoading] = useState(true);
     const [language, setLanguage] = useState(i18n.language);
 
+    // 1. פונקציית לוגאוט אחת בלבד - מעודכנת עבור ה-Service שלך
+    const logout = async () => {
+        try {
+            // אנחנו שולחים 'current' כדי לרצות את ה-Service שדורש string
+            // אבל עוטפים את זה כדי למנוע זליגת ארגומנטים מה-UI
+            await deleteSession('current');
+        } catch (error: any) {
+            console.log("Logout failed:", error.message);
+        } finally {
+            await AsyncStorage.removeItem('lastExitTime');
+            setUser(null);
+            console.log("Local session cleared.");
+        }
+    };
+
     const toggleLanguage = async () => {
-        const newLang = i18n.language === 'he' ? 'en' : 'he';
-        const isRTL = newLang === 'he';
+        try {
+            const newLang = i18n.language === 'he' ? 'en' : 'he';
+            const isRTL = newLang === 'he';
 
-        // שמירת השפה בזיכרון המכשיר
-        await AsyncStorage.setItem('user-language', newLang);
-        await i18n.changeLanguage(newLang);
-        setLanguage(newLang);
+            await AsyncStorage.setItem('user-language', newLang);
+            await i18n.changeLanguage(newLang);
+            setLanguage(newLang);
 
-        if (I18nManager.isRTL == isRTL) {
-            I18nManager.allowRTL(isRTL);
-            I18nManager.forceRTL(isRTL);
+            if (I18nManager.isRTL !== isRTL) {
+                I18nManager.allowRTL(isRTL);
+                I18nManager.forceRTL(isRTL);
 
+                if (Platform.OS !== 'web') {
+                    // תיקון ה-setTimeout למניעת שגיאת ארגומנטים
+                    setTimeout(() => {
+                        Updates.reloadAsync().catch(() => {});
+                    }, 200);
+                }
+            }
+        } catch (error) {
+            console.error("Language toggle error:", error);
         }
     };
 
     useEffect(() => {
         const initApp = async () => {
             try {
-                console.log("--- START AUTH CHECK ---");
-
-                // טעינת השפה שנשמרה
                 const savedLang = await AsyncStorage.getItem('user-language');
                 if (savedLang) {
-                    i18n.changeLanguage(savedLang);
+                    await i18n.changeLanguage(savedLang);
                     setLanguage(savedLang);
-                }
 
-                const lastExit = await AsyncStorage.getItem('lastExitTime');
-                if (lastExit) {
-                    const elapsed = Date.now() - parseInt(lastExit);
-                    if (elapsed > 60000) {
-                        await logout();
-                        setIsLoading(false);
-                        return;
+                    const shouldBeRTL = savedLang === 'he';
+                    if (I18nManager.isRTL !== shouldBeRTL) {
+                        I18nManager.allowRTL(shouldBeRTL);
+                        I18nManager.forceRTL(shouldBeRTL);
+
+                        if (Platform.OS !== 'web') {
+                            setTimeout(() => { Updates.reloadAsync().catch(() => {}); }, 10);
+                            return;
+                        }
                     }
                 }
 
                 const userAccount = await getCurrentUser();
-                if (userAccount) {
-                    console.log("User found:", userAccount.email);
-                    setUser(userAccount);
-                }
+                if (userAccount) setUser(userAccount);
+
             } catch (error: any) {
-                if (error.code === 401 || error.message.includes("missing scopes")) {
-                    console.log("Cleaning up invalid/guest session...");
-                    try { await deleteSession('current'); } catch (e) { }
-                }
+                // קריאה בטוחה לניקוי סשן במקרה של שגיאת Auth
+                try { await deleteSession('current'); } catch (e) {}
                 setUser(null);
             } finally {
                 setIsLoading(false);
-                console.log("--- AUTH CHECK FINISHED ---");
             }
         };
         initApp();
@@ -91,7 +108,7 @@ const GlobalProvider = ({children}: { children: React.ReactNode }) => {
 
         const subscription = AppState.addEventListener('change', handleAppStateChange);
         return () => subscription.remove();
-    }, [user]); // הוספת תלות ב-user
+    }, [user]);
 
     useEffect(() => {
         if (!isLoading && !user) {
@@ -99,24 +116,10 @@ const GlobalProvider = ({children}: { children: React.ReactNode }) => {
         }
     }, [user, isLoading]);
 
-    const logout = async () => {
-        try {
-            await deleteSession('current');
-        } catch (error: any) {
-            if (error.code !== 401) {
-                console.error("Logout from server failed:", error.message);
-            }
-        } finally {
-            await AsyncStorage.removeItem('lastExitTime');
-            setUser(null);
-            console.log("Local session cleared.");
-        }
-    };
-
     return (
         <GlobalContext.Provider value={{ user, setUser, logout, isLoading, language, toggleLanguage }}>
             {children}
         </GlobalContext.Provider>
     );
-}
+};
 export default GlobalProvider;
