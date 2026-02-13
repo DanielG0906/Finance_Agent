@@ -54,7 +54,7 @@ const InputComponent = ({ label, value, onChange, isFocused, onFocus, onBlur, pl
 
             {error ? (
                 <Text
-                    className="text-red-500 text-xs mt-1 ml-2"
+                    className="text-red-500 text-xs mt-1 mx-3"
                     style={{ textAlign: isHebrew ? 'right' : 'left' }}
                 >
                     {t(error)}

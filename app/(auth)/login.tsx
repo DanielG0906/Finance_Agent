@@ -19,9 +19,9 @@ const Login = () => {
     const [userName, setUserName] = useState("");
     const [firstName, setFirstName] = useState("");
     const [lastName, setLastName] = useState("");
-    const {setUser} = useGlobalContext();
+    const {setUser,language} = useGlobalContext();
     const { t } = useTranslation();
-    const isRTL = i18n.language === 'he';
+    const isRTL = language === 'he';
     const [userNameFocused, setUserNameFocused] = useState(false);
     const [emailFocused, setEmailFocused] = useState(false);
     const [passFocused, setPassFocused] = useState(false);

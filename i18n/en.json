@@ -30,8 +30,19 @@
   "go_back": "Go Back",
   "enter_username": "enter your username",
 
-  "index_welcomeBack": "Welcome Back!",
+  "index_welcomeBack": "Welcome Back,",
   "index_profile": "Profile",
   "index_settings": "Settings",
-  "index_logout": "Log out"
+  "index_logout": "Log out",
+  "index_daily_expenses" :"Daily expenses",
+  "index_monthly_income" :"Monthly income",
+  "index_main_title": "What's new today?",
+  "index_main_subtitle": "Here you can update expenses incurred today or expected income for the current month.",
+
+  "dailyExpense_dailyReport": "Daily report",
+  "dailyExpense_detailsOfMovements": "Details of movements",
+  "dailyExpense_notReported": "You haven't reported today yet",
+  "dailyExpense_clickOnPlus": "Click the plus to start following",
+  "dailyExpense_totalExpenses": "Total expenses for the day",
+  "dailyExpense_operations": "operations"
 }

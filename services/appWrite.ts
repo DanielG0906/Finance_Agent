@@ -1,8 +1,9 @@
 import {Account, Client, Databases, ID, Models, Query} from "react-native-appwrite";
-import {UserDetails} from "@/interfaces/interfaces";
+import {Expense, UserDetails} from "@/interfaces/interfaces";
 
 const DATABASE_ID: string = process.env.EXPO_PUBLIC_APPWRITE_DATABASE_ID!;
 const COLLECTION_USERS = process.env.EXPO_PUBLIC_APPWRITE_COLLECTION_ID_USERS!;
+const COLLECTION_EXPENSES = process.env.EXPO_PUBLIC_APPWRITE_COLLECTION_ID_EXPENSES;
 
 
 const client = new Client()
@@ -85,6 +86,38 @@ export const createNewAccount = async (email: string, password: string, userName
         return newAccount;
     } catch (e) {
         //need to add a delete account
+        throw e;
+    }
+}
+
+export const todayExpensesPerUser = async (): Promise<Expense[]> => {
+    try {
+        const account = new Account(client);
+        const currentAccount = await account.get();
+
+        const startOfToday = new Date();
+        startOfToday.setHours(0, 0, 0, 0);
+
+        const endOfToday = new Date();
+        endOfToday.setHours(23, 59, 59, 999);
+
+        // 2. הוספת השאילתות ל-Appwrite
+        const result = await database.listDocuments(
+            DATABASE_ID as string,
+            COLLECTION_EXPENSES as string,
+            [
+                Query.equal('userID', currentAccount.$id),
+                // סינון לפי טווח תאריכים בשדה onDate
+                Query.greaterThanEqual('onDate', startOfToday.toISOString()),
+                Query.lessThanEqual('onDate', endOfToday.toISOString()),
+                Query.select(['amount', 'onDate', 'categoryID.categoryDescHeb','subCategoryID.subCategoryDescHeb','subCategoryID.icon'])
+            ]
+        );
+
+        // החזרת כל המסמכים שנמצאו להיום כקובץ מערך
+        return result.documents as unknown as Expense[];
+    } catch (e) {
+        console.error("Error fetching today's expenses:", e);
         throw e;
     }
 }

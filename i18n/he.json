@@ -30,8 +30,19 @@
   "go_back": "חזרה",
   "enter_username": "הכנס/י שם משתמש",
 
-  "index_welcomeBack": "ברוך שובך!",
+  "index_welcomeBack": "שלום,",
   "index_profile": "פרופיל",
   "index_settings": "הגדרות",
-  "index_logout": "התנתקות"
+  "index_logout": "התנתקות",
+  "index_daily_expenses" :"הוצאות יומיות",
+  "index_monthly_income" :"הכנסה חודשית",
+  "index_main_title": "מה חדש היום?",
+  "index_main_subtitle": "כאן ניתן לעדכן הוצאות שבוצעו היום או את ההכנסות הצפויות לחודש הנוכחי.",
+
+  "dailyExpense_dailyReport": "דיווח יומי",
+  "dailyExpense_detailsOfMovements": "פירוט תנועות",
+  "dailyExpense_notReported": "עדיין לא דיווחת היום",
+  "dailyExpense_clickOnPlus": "לחץ על הפלוס כדי להתחיל לעקוב",
+  "dailyExpense_totalExpenses": "סה״כ הוצאות היום",
+  "dailyExpense_operations": "פעולות"
 }
