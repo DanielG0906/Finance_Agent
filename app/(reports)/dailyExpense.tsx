@@ -89,9 +89,9 @@ const ExpenseItem = ({ expense, isRTL, index }: ExpenseItemProps) => {
                             textAlign: isRTL ? 'right' : 'left',
                         }}
                     >
-                        {expense?.subCategoryID.subCategoryDescHeb}
+                        {isRTL? expense?.subCategoryID.subCategoryDescHeb : expense?.subCategoryID.subCategoryDescEng}
                     </Text>
-                    <CategoryPill label={expense?.categoryID.categoryDescHeb} />
+                    {isRTL?<CategoryPill label={expense?.categoryID.categoryDescHeb}/> : <CategoryPill label={expense?.categoryID.categoryDescEng}/>}
                 </View>
 
                 <View
@@ -276,8 +276,7 @@ const DailyExpense = () => {
         loading:isLoading,
         error,
         refetch,
-    } = useFetch(todayExpensesPerUser)
-
+    } = useFetch(todayExpensesPerUser,true)
 
     const totalAmount = (expenses ?? []).reduce((sum, item) => sum + item.amount, 0);
 
@@ -381,7 +380,7 @@ const DailyExpense = () => {
                             paddingHorizontal: 4,
                         }}
                     >
-                        <FABButton onPress={() => console.log("PRESS")} />
+                        <FABButton onPress={() => router.push('/(reports)/components/AddExpense')} />
                     </View>
                 </ScrollView>
             </SafeAreaView>

@@ -110,7 +110,8 @@ export const todayExpensesPerUser = async (): Promise<Expense[]> => {
                 // סינון לפי טווח תאריכים בשדה onDate
                 Query.greaterThanEqual('onDate', startOfToday.toISOString()),
                 Query.lessThanEqual('onDate', endOfToday.toISOString()),
-                Query.select(['amount', 'onDate', 'categoryID.categoryDescHeb','subCategoryID.subCategoryDescHeb','subCategoryID.icon'])
+                Query.select(['amount', 'onDate', 'categoryID.categoryDescHeb','subCategoryID.subCategoryDescHeb','subCategoryID.icon',
+                            'categoryID.categoryDescEng','subCategoryID.subCategoryDescEng'])
             ]
         );
 
